@@ -1,4 +1,4 @@
-module mailing
+module github.com/frozosea/mailing
 
 go 1.18
 
