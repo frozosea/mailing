@@ -12,7 +12,7 @@ import (
 	"sync"
 )
 
-type Response struct {
+type response struct {
 	Result struct {
 		Statuses []struct {
 			Id     int64  `json:"id"`
@@ -26,18 +26,18 @@ type WithUniSender struct {
 	reader          *file_reader.FileReader
 	senderName      string
 	senderEmail     string
-	UnisenderApiKey string
+	uniSenderApiKey string
 	signature       string
 }
 
 func NewWithUniSender(senderName string, senderEmail string, unisenderApiKey string, signature string) *WithUniSender {
-	return &WithUniSender{reader: file_reader.New(), senderName: senderName, senderEmail: senderEmail, UnisenderApiKey: unisenderApiKey, signature: signature}
+	return &WithUniSender{reader: file_reader.New(), senderName: senderName, senderEmail: senderEmail, uniSenderApiKey: unisenderApiKey, signature: signature}
 }
 
 func (m *WithUniSender) getForm(toAddress, subject, body string) url.Values {
 	query := url.Values{}
 	query.Set("format", "json")
-	query.Set("api_key", m.UnisenderApiKey)
+	query.Set("api_key", m.uniSenderApiKey)
 	query.Set("sender_name", m.senderName)
 	query.Set("email", toAddress)
 	query.Set("sender_email", m.senderEmail)
@@ -49,7 +49,7 @@ func (m *WithUniSender) getForm(toAddress, subject, body string) url.Values {
 }
 func (m *WithUniSender) checkStatusOfEmail(id string) error {
 	client := http.Client{}
-	checkStatusUrl := fmt.Sprintf(`https://api.unisender.com/ru/api/checkEmail?format=json&api_key=%s&email_id=%s`, m.UnisenderApiKey, id)
+	checkStatusUrl := fmt.Sprintf(`https://api.unisender.com/ru/api/checkEmail?format=json&api_key=%s&email_id=%s`, m.uniSenderApiKey, id)
 	r, err := client.Get(checkStatusUrl)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func (m *WithUniSender) checkStatusOfEmail(id string) error {
 	if readErr != nil {
 		return readErr
 	}
-	var s Response
+	var s response
 	if unmarshalErr := json.Unmarshal(body, &s); unmarshalErr != nil {
 		return unmarshalErr
 	}
